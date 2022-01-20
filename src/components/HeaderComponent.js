@@ -14,7 +14,7 @@ import DatePicker from "@mui/lab/DatePicker";
 function Header(props) {
   return (
     <AppBar position="fixed" sx={{ padding: "10px" }}>
-      <Toolbar container spacing={2}>
+      <Toolbar>
         <Typography
           variant="h6"
           noWrap

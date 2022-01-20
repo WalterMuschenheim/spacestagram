@@ -8,7 +8,7 @@ function Main(props) {
   const [images, setImages] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [selectDate, setDate] = useState(null);
-  const [dateRange, setDateRange] = useState();
+  const [dateRange, setDateRange] = useState(1);
 
   const toggleFavorite = (title) => {
     console.log(favorites.includes(title));
@@ -25,15 +25,15 @@ function Main(props) {
     const cookies = document.cookie;
     const cookieObj = cookies
       .split(";")
-      .map((string) => string.split("="))
+      .map((string) => string?.split("="))
       ?.reduce((obj, arr) => {
         return {
           ...obj,
-          [arr[0]]: arr[1].split(","),
+          [arr[0]]: arr[1]?.split(","),
         };
       }, {});
     console.log(cookies, cookieObj);
-    if (cookieObj.favorites) {
+    if (cookieObj?.favorites) {
       setFavorites(cookieObj.favorites);
     }
   }, []);
@@ -42,7 +42,7 @@ function Main(props) {
     const currentMilis = currentDate.getTime();
     const oneWeek = 7 * 24 * 60 * 60 * 1000;
     const oneWeekFromNow = new Date(currentMilis + oneWeek);
-    document.cookie = `favorites=${favorites}; expires=${oneWeekFromNow}`;
+    document.cookie = `favorites=${favorites}; expires=${oneWeekFromNow}; SameSite=Lax`;
     console.log("cookie", document.cookie, favorites);
   }, [favorites]);
   useEffect(() => {
