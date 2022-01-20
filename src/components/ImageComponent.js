@@ -7,26 +7,41 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
+import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 function Image(props) {
   return (
     <Card>
       <CardMedia
-        component="img"
-        height="194"
+        component={
+          props.mediaType === "image"
+            ? "img"
+            : props.mediaType === "video"
+            ? "iframe"
+            : "img"
+        }
+        sx={{ height: "auto", minHeight: "300px" }}
         image={props.imageUrl}
         alt={props.title}
       />
       <CardContent>
         <Typography variant="h6">{props.title}</Typography>
         <Typography variant="body2" color="text.secondary">
+          {props.copyright ? `©${props.copyright}` : null}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
           {props.date}
         </Typography>
       </CardContent>
-      <IconButton onClick={() => props.toggleFavorite(props.title)}>
-        <FavoriteIcon color={props.favorite ? "primary" : "secondary"} />
-      </IconButton>
+      <CardActions disableSpacing>
+        <IconButton
+          onClick={() => props.toggleFavorite(props.title)}
+          aria-label="add to favorites"
+        >
+          <FavoriteIcon sx={{ color: props.favorite ? red[500] : "grey" }} />
+        </IconButton>
+      </CardActions>
       <Typography variant="body2" color="text.primary">
         {props.content}
       </Typography>
