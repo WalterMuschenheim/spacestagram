@@ -26,7 +26,7 @@ function Main(props) {
     const cookieObj = cookies
       .split(";")
       .map((string) => string.split("="))
-      .reduce((obj, arr) => {
+      ?.reduce((obj, arr) => {
         return {
           ...obj,
           [arr[0]]: arr[1].split(","),
