@@ -46,10 +46,7 @@ function Main(props) {
     console.log("cookie", document.cookie, favorites);
   }, [favorites]);
   useEffect(() => {
-    const currentDate = new Date();
-    const currentMilis = currentDate.getTime();
-    const oneWeek = 7 * 24 * 60 * 60 * 1000;
-    const oneWeekAgo = new Date(currentMilis - oneWeek);
+    let controller = new AbortController();
     const query = selectDate
       ? `start_date=${
           selectDate > DateTime.now().minus({ days: 1 })
@@ -60,25 +57,29 @@ function Main(props) {
             ? DateTime.now().toFormat("yyyy'-'LL'-'dd")
             : selectDate.plus({ weeks: dateRange }).toFormat("yyyy'-'LL'-'dd")
         }`
-      : `start_date=${oneWeekAgo.getFullYear()}-${
-          oneWeekAgo.getMonth() + 1 < 10
-            ? `0${oneWeekAgo.getMonth() + 1}`
-            : oneWeekAgo.getMonth()
-        }-${
-          oneWeekAgo.getDay() < 10
-            ? `0${oneWeekAgo.getDay()}`
-            : oneWeekAgo.gatDay()
-        }`;
+      : `start_date=${DateTime.now()
+          .minus({ weeks: 1 })
+          .toFormat("yyyy'-'LL'-'dd")}`;
     const apodRequest = new Request(
-      `https://api.nasa.gov/planetary/apod?${query}&api_key=tjbxWIQU1FLhr28offHGq7lV0dMlyqQkAn7L7CLr`
+      `https://api.nasa.gov/planetary/apod?${query}&api_key=tjbxWIQU1FLhr28offHGq7lV0dMlyqQkAn7L7CLr`,
+      {
+        signal: controller.signal,
+      }
     );
     console.log(apodRequest, query);
+
     fetch(apodRequest)
       .then((result) => result.json())
       .then((result) => {
         console.log(result);
         setImages(result);
+      })
+      .catch((e) => {
+        console.log(e);
       });
+    return () => {
+      return () => controller?.abort();
+    };
   }, [dateRange, selectDate]);
 
   return (
