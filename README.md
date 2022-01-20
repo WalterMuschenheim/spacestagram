@@ -1,4 +1,15 @@
-# Getting Started with Create React App
+# Spacetagram
+
+This is the technical challenge for the summer 2022 Shopify front end developer intership.
+You can see a working deployment of this app [here](https://waltermuschenheim.github.io/spacestagram/).
+
+## Notes
+
+This app uses the [NASA apod api](https://api.nasa.gov) to display a selection of Astronmical Pictures of the Day.
+
+The app uses cookies to persist favorites in the browser. If you close and reload the page, the favorites you have clikced on will still be selected.
+
+Try using the 'date picker' and 'number of weeks' dropdows to view images from differnt date ranges.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
