@@ -68,7 +68,7 @@ function Image(props) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography paragraph color="text.primary">
+          <Typography paragraph sx={{ textAlign: "left" }} color="text.primary">
             {props.content}
           </Typography>
         </CardContent>
