@@ -1,14 +1,32 @@
 import React, { useEffect, useState } from "react";
 import Image from "./ImageComponent";
 import Header from "./HeaderComponent";
-import { Grid, Container } from "@mui/material";
+import { Grid, Container, Skeleton } from "@mui/material";
 import { DateTime } from "luxon";
+
+const LOADING_STATUS = (loadingComponent, loadedComponent, errorComponent) => ({
+  loading: loadingComponent,
+  loaded: loadedComponent,
+  error: errorComponent,
+});
+
+function LoadingWrapper({
+  loadingStatus,
+  loadingComponent,
+  loadedComponent,
+  errorComponent,
+}) {
+  return LOADING_STATUS(loadingComponent, loadedComponent, errorComponent)[
+    loadingStatus
+  ];
+}
 
 function Main(props) {
   const [images, setImages] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [selectDate, setDate] = useState(null);
   const [dateRange, setDateRange] = useState(1);
+  const [loading, setLoadState] = useState({ status: "loading" });
 
   const toggleFavorite = (title) => {
     console.log(favorites.includes(title));
@@ -20,6 +38,25 @@ function Main(props) {
     }
     console.log(typeof favorites, favorites);
   };
+
+  const gridComponent = (
+    <Grid container spacing={2} sx={{ marginTop: "80px" }}>
+      {images.map((image) => (
+        <Grid item xs={12} md={6} key={image.date}>
+          <Image
+            imageUrl={image.url}
+            mediaType={image.media_type}
+            title={image.title}
+            date={image.date}
+            copyright={image.copyright}
+            content={image.explanation}
+            toggleFavorite={toggleFavorite}
+            favorite={favorites.includes(image.title)}
+          />
+        </Grid>
+      ))}
+    </Grid>
+  );
 
   useEffect(() => {
     const cookies = document.cookie;
@@ -67,21 +104,23 @@ function Main(props) {
       }
     );
     console.log(apodRequest, query);
-
+    setLoadState({ status: "loading" });
     fetch(apodRequest)
       .then((result) => result.json())
       .then((result) => {
         console.log(result);
+        setLoadState({ status: "loaded" });
         setImages(result);
       })
       .catch((e) => {
+        setLoadState({ satus: "error", errMess: e.message });
         console.log(e);
       });
     return () => {
       return () => controller?.abort();
     };
   }, [dateRange, selectDate]);
-
+  useEffect(() => console.log("laoding", loading), [loading]);
   return (
     <>
       <Header
@@ -91,22 +130,24 @@ function Main(props) {
         setDateRange={setDateRange}
       />
       <Container>
-        <Grid container spacing={2} sx={{ marginTop: "80px" }}>
-          {images.map((image) => (
-            <Grid item xs={12} md={6} key={image.date}>
-              <Image
-                imageUrl={image.url}
-                mediaType={image.media_type}
-                title={image.title}
-                date={image.date}
-                copyright={image.copyright}
-                content={image.explanation}
-                toggleFavorite={toggleFavorite}
-                favorite={favorites.includes(image.title)}
-              />
+        <LoadingWrapper
+          loadingStatus={loading.status}
+          loadingComponent={
+            <Grid container spacing={2} sx={{ marginTop: "80px" }}>
+              {Array.from(new Array(3)).map(() => (
+                <Grid item xs={12} md={6}>
+                  <Skeleton variant="rectangular" width={"auto"} height={300} />
+                  <Skeleton variant="text" />
+                  <Skeleton variant="text" />
+                  <Skeleton variant="text" />
+                  <Skeleton variant="circular" width={40} height={40} />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          }
+          loadedComponent={gridComponent}
+          errorComponent={<div>{loading?.errMess || null}</div>}
+        />
       </Container>
     </>
   );
